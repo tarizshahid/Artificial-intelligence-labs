@@ -1,0 +1,382 @@
+
+DFS:
+
+graph = {'A': ['B', 'C', 'E'], #Common for both dfs n bfs
+         'B': ['A','D', 'E'],
+         'C': ['A', 'F', 'G'],
+         'D': ['B'],
+         'E': ['A', 'B','D'],
+         'F': ['C'],
+         'G': ['C']}
+visited=set()
+
+def dfs(visited, graph, node):
+    if node not in visited:
+        print (node)
+        visited.add(node)
+        for neighbour in graph[node]:
+            dfs(visited, graph, neighbour)
+
+
+
+BFS:
+
+def breadth_first_search(visited, graph, node):
+    queue=[]
+    queue.append(node)
+    visited.add(node)
+    print(node)
+    #if len(queue) != 0:
+    while len(queue) != 0:
+        temp=queue.pop(0)
+        for x in graph[temp]:
+            if x not in visited:
+                queue.append(x)
+                visited.add(x)
+                print(x)
+
+
+
+A*:
+
+def aStarAlgo(start_node, stop_node):
+    open_set = set(start_node)
+    closed_set = set()
+    g = {}
+    parents = {}
+
+    g[start_node] = 0
+    parents[start_node] = start_node
+
+    while len(open_set) > 0:
+        n = None
+
+        for v in open_set:
+            if n == None or g[v] + heuristic(v) < g[n] + heuristic(n):
+                n = v
+
+        if n == stop_node or Graph_nodes[n] == None:
+            pass
+        else:
+            for (m, weight) in get_neighbors(n):
+                if m not in open_set and m not in closed_set:
+                    open_set.add(m)
+                    parents[m] = n
+                    g[m] = g[n] + weight
+
+
+                else:
+                    if g[m] > g[n] + weight:
+                        g[m] = g[n] + weight
+                        parents[m] = n
+
+                        if m in closed_set:
+                            closed_set.remove(m)
+                            open_set.add(m)
+
+        if n == None:
+            print('Path does not exist!')
+            return None
+        if n == stop_node:
+            path = []
+
+            while parents[n] != n:
+                path.append(n)
+                n = parents[n]
+
+            path.append(start_node)
+
+            path.reverse()
+
+            print('Path found: {}'.format(path))
+            return path
+
+        open_set.remove(n)
+        closed_set.add(n)
+
+    print('Path does not exist!')
+    return None
+
+
+def get_neighbors(v):
+    if v in Graph_nodes:
+        return Graph_nodes[v]
+    else:
+        return None
+
+
+def isConsitent(graph, start):
+    for node in graph:
+        for edge in graph[node]:
+            if(heuristic(start)<=edge[1]+heuristic(edge[0])):
+                pass
+            else:
+                print(start + " --- > " + edge[0] + " is consistent")
+
+def isAdmisible(graph, start):
+    for node in graph:
+        for edge in graph[node]:
+            if(heuristic(node)<edge[1]):
+                print(node + " -> " + edge[0] +  "is admisible")
+
+def heuristic(n):
+    H_dist = {
+        'A': 11,
+        'B': 6,
+        'C': 99,
+        'D': 1,
+        'E': 7,
+        'G': 0,
+    }
+
+    return H_dist[n]
+
+
+Graph_nodes = {
+    'A': [('B', 2), ('E', 3)],
+    'B': [('C', 1), ('G', 9)],
+    'C': [],
+    'E': [('D', 6)],
+    'D': [('G', 1)],
+
+}
+isConsitent(Graph_nodes, 'A')
+isAdmisible(Graph_nodes,'A')
+
+
+
+MinMax:
+
+def fun_Minmax(cd, node, maxt, scr, td):
+    if(cd==td):
+        return scr[node]
+    if(maxt):
+        return max(fun_Minmax(cd+1, node*2, False, scr, td), fun_Minmax(cd+1, node*2+1, False, scr, td))
+    else:
+        return min(fun_Minmax(cd+1, node*2, True, scr, td),
+                   fun_Minmax(cd+1, node*2+1, True, scr, td))
+scr = []
+x = int(input("Enter total number of leaf nodes="))
+for i in range(x):
+    y = int(input("Enter Leaf Value: "))
+    scr.append(y)
+import math
+print(len(scr))
+td = math.log(len(scr), 2)
+print(td)
+cd = int(input("Enter Current Depth Value: "))
+nodev = int(input("Enter node value: "))
+maxt = True
+print("The answer is: ", end="")
+answer = fun_Minmax(cd, nodev, maxt, scr, td)
+print(answer)
+
+
+
+
+Alpha-Beta Pruning:
+
+max = int(input("Enter value of Alpha:"))
+min = int(input("Enter value of Beta:"))
+
+def fun_aplha_beta(d,node,maxp,v,A,B):
+   
+    if d==3:
+        return v[node]
+    if maxp:
+        best =min
+        for i in range(0,2):
+            value = fun_alpha_beta(d+1,node*2+i,False,v,A,B)
+            best = max(best,value)
+            A=max(A,best)
+            if B<=A:
+                break
+        return best
+    else:
+        best = max
+       
+        for i in range(0,2):
+            value = fun_alpha_beta(d+1,node*2+i,True,v,A,B)
+            best= min(best,value)
+            B=min(B,best)
+            if B<=A:
+                break
+        return best
+   
+src=[]
+x = int(input("Enter total no of leaf nodes:"))
+for i in range(x):
+    y=int(input("Enter node value: "))
+    src.append(y)
+   
+d=int(input("Enter depth value: " ))
+node=int(input("Enter node value: " ))
+
+print("The optimal value is: ",fun_alpha_beta(d,node,True,src,min,max))
+
+
+
+AC3:
+
+import queue
+domains = {
+    'A': [1, 2, 3],
+    'B': [1, 2, 3],
+    'C': [1, 2, 3]
+}
+
+constraints = {
+    ('A', 'B'): lambda a, b: a > b,
+    ('B', 'A'): lambda b, a: b < a,
+    ('B', 'C'): lambda b, c: b == c,
+    ('C', 'B'): lambda c, b: c == b,
+}
+def revise(x, y):
+    revised = False
+   
+    for i in domains[x]:
+        temp = 0
+        for j in domains[y]:
+            if constraints[(x, y)](i, j) == False:
+                temp += 1
+        if(temp == len(domains[y])):
+            domains[x].remove(i)
+            revised = True
+    return revised
+def ac3(arcs):
+
+    queue=[]
+    for x in arcs:
+        queue.append(x)
+   
+    while len(queue) != 0:
+        row=queue.pop(0)
+        revised = revise(row[0], row[1])
+        if revised:
+            neighbors = [neighbor for neighbor in arcs if neighbor[1] == x]
+            queue = queue + neighbors
+arcs = [('A', 'B'), ('B', 'A'), ('B', 'C'), ('C', 'B')]
+
+ac3(arcs)
+
+print(domains)
+
+
+
+K-means:
+
+import numpy as np
+import pandas as pd
+from scipy.spatial import distance
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+%matplotlib inline
+df = pd.read_csv('cluster_validation_data.txt', sep=",", header=None)
+df.head()
+X = df.values
+sc = StandardScaler()
+sc.fit(X)
+X = sc.transform(X)
+type(X)
+def kmeans(X,k=3,max_iterations=100):
+   
+    import random
+    import math
+   
+    for iteration in range(0,max_iterations):
+        centroid=[]
+        P=[]
+        for i in range(0,k):
+            temp=random.randint(0,len(X)-1)
+            centroid.append(X[i])
+        for i in X:
+            temp=[]
+            for j in centroid:
+                distance=math.sqrt((i[0]-j[0])*(i[0]-j[0])+((i[1]-j[1])*(i[1]-j[1])))
+                temp.append(distance)
+            P.append(temp.index(min(temp)))
+        sum=[]
+        for i in range(0,k):
+            sum.append([0,0,0])
+        for i in range(0,len(X)):
+            sum[P[i]] [0] +=X[i][0]
+            sum[P[i]] [1] +=X[i][1]
+            sum[P[i]] [2]+=1
+        for i in range(0,k):
+            centroid[i][0]=(sum[i][0]/sum[i][2])
+            centroid[i][1]=(sum[i][1]/sum[i][2])
+    return P
+P = kmeans(X)
+assert len(df) == len(P)
+X = sc.inverse_transform(X)
+plt.figure(figsize=(15,10))
+plt.scatter(X[:,0],X[:,1],c=P)
+plt.show()
+
+
+
+Preceptron:
+
+import numpy as np
+operator = 'and'
+attributes = np.array([[0, 0], [0, 1],[1, 0], [1, 1]])
+attributes
+
+if operator == 'and':
+    labels = np.array([0, 0, 0, 1])
+elif operator == 'or':
+    labels = np.array([0, 1, 1, 1])
+elif operator == 'xor':
+    labels = np.array([0,1, 1, 0])
+w = [0.9, 0.9]
+threshold = 0.5
+alpha  = 0.5
+epochs = 100
+for i in range (0, epochs):
+    print("epoch", i+1)
+    for j in range(len(attributes)):
+        actual = labels [j]
+        sum = attributes[j][0] * w[0] +attributes[j][1]*w [1]
+        if sum > threshold:
+            predicted = 1
+        else:
+            predicted = 0
+        delta = actual - predicted
+
+        for k in range (0, 2):
+            w[k] = w[k] + delta*alpha
+        print(attributes[j][0]," ",operator, attributes[j][1], "->actual: ", actual,"predicted :",predicted, "Weights", w[0]," - ",w[1])
+    print ("----------------------")
+
+
+Delta Rule:
+
+import numpy as np
+operator = 'and'
+attributes = np.array([[0, 0], [0, 1],[1, 0], [1, 1]])
+attributes
+
+if operator == 'and':
+    labels = np.array([0, 0, 0, 1])
+elif operator == 'or':
+    labels = np.array([0, 1, 1, 1])
+elif operator == 'xor':
+    labels = np.array([0,1, 1, 0])
+w = [0.9, 0.9]
+threshold = 0.5
+alpha  = 0.5
+epochs = 100
+bias=0.5
+for i in range (0, epochs):
+    print("epoch", i+1)
+    for j in range(len(attributes)):
+        actual = labels [j]
+        yin = attributes[j][0] * w[0] +attributes[j][1]*w [1]+bias
+       
+        delta = actual - yin*bias
+
+        for k in range (0, 2):
+            w[k] = w[k] + delta*alpha* w[0] +attributes[j][k]
+        print(attributes[j][0]," ",operator, attributes[j][1], "->actual: ", actual," ,yin  :", yin, "Weights", w[0]," - ",w[1])
+    print ("----------------------")
+
